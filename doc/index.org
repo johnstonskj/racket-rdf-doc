@@ -1,0 +1,293 @@
+#+TITLE: Racket RDF
+#+AUTHOR: Simon Johnston
+#+EMAIL: johnstonskj@gmail.com
+#+LANGUAGE: en
+#+STARTUP: overview hidestars inlineimages entitiespretty
+
+* Introduction
+
+#+NAME: src:overview-packages
+#+BEGIN_SRC plantuml :file ./overview-packages.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+class rdf <<package>> {}
+class "rdf-core" as core <<package>> {}
+class "rdf-dc" as dc <<package>> {}
+core .right.> rdf
+dc .right.> core
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:overview-packages
+#+CAPTION: 
+#+RESULTS: src:overview-packages
+[[file:./overview-packages.svg]]
+
+** Package =core=
+
+#+NAME: src:core-package-overview
+#+BEGIN_SRC plantuml :file ./core-package-overview.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+package rdf <<module>> {
+    package core <<module>> {
+        class name <<module>> {}
+        class namespace <<module>> {}
+        class nsmap <<module>> {}
+        class literal <<module>> {}
+        class statement <<module>> {}
+        class triple <<module>> {}
+        class graph <<module>> {}
+        class quad <<module>> {}
+        class dataset <<module>> {}
+        class gq <<module>> {}
+        class io <<module>> {}
+        class v <<module>> {}
+
+        namespace ..> name
+        nsmap ..> name
+        nsmap ..> namespace
+        literal ..> namespace
+        statement ..> namespace
+        statement ..> literal
+        triple ..> literal
+        triple ..> statement
+        graph ..> literal
+        graph ..> statement
+        graph ..> triple
+        quad ..> graph
+        quad ..> literal
+        quad ..> statement
+        dataset ..> graph
+        dataset ..> statement
+        dataset ..> triple
+        gq ..> statement
+        gq ..> graph
+        io ..> namespace
+        io ..> nsmap
+        io ..> literal
+        io ..> statement
+        io ..> graph
+        io ..> dataset
+        io ..> gq        
+        v ..> name
+        v ..> namespace
+        v ..> nsmap
+    }
+}
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:core-package-overview
+#+CAPTION: Package =rdf-core= Overview
+#+RESULTS: src:core-package-overview
+[[file:./core-package-overview.svg]]
+
+*** Module =name=
+
+#+NAME: src:core-name-module
+#+BEGIN_SRC plantuml :file ./core-name-module.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+class name <<module>> {}
+
+class "local-name" as local_name <<struct>> {
+    {static} string->local-name(string?) : local-name?
+    {static} local-name?(any/c) : boolean?
+    {static} local-name-string?(any/c) : boolean?
+    local-name->string(local-name?) : string?
+}
+
+name +-- local_name
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:core-name-module
+#+CAPTION: 
+#+RESULTS: src:core-name-module
+[[file:./core-name-module.svg]]
+
+*** Module =namespace=
+
+#+NAME: src:core-namespace-module
+#+BEGIN_SRC plantuml :file ./core-namespace-module.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+class "namespace" as nsmodule <<module>> {
+    url-absolute(url?) : boolean?
+    namespace-url?(url?) : boolean?
+}
+
+class namespace <<struct>> {
+    {static} url->namespace(url?) : namespace?
+    {static} string->namespace(string?) : namespace?
+    {static} namespace?(any/c) : boolean?
+    {static} local-name-string?(any/c) : boolean?
+    namespace->url(namespace?) : url?
+    namespace->string(namespace?) : string?
+    namespace+name->url(namespace?, local-name?) : url?
+}
+
+class nsname <<struct>> {
+    {static} make-nsname(namespace?, local-name?) : nsname?
+    {static} nsname?(any/c) : boolean?
+    {static} url->namespace+name(url?) : namespace?, local-name?
+    {static} url->nsname(url?) : nsname?
+    nsname-namespace(nsname?) : namespace?
+    nsname-local-name(nsname?) : local-name?
+    nsname->url(nsname?) : url?
+    nsname-make-nsname(nsname?, local-name?) : nsname?
+}
+
+nsmodule +-- namespace
+nsmodule +-- nsname
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:core-namespace-module
+#+CAPTION: The =rdf/core/namespace= module
+#+RESULTS: src:core-namespace-module
+[[file:./core-namespace-module.svg]]
+
+*** Module =nsmap=
+*** Module =literal=
+*** Module =statement=
+*** Module =triple=
+*** Module =graph=
+*** Module =quad=
+*** Module =dataset=
+*** Module =gq=
+*** Module =io=
+*** Module =v=
+
+#+NAME: src:v-module-overview
+#+BEGIN_SRC plantuml :file ./v-module-overview.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+package rdf <<module>> {
+    package core <<module>> {
+        class name <<module>> {}
+        class namespace <<module>> {}
+        class nsmap <<module>> {}
+        
+        package v <<module>> {
+            class ex <<module>> {}
+            class rdf <<module>> {}
+            class rdfs <<module>> {}
+            class sd <<module>> {}
+            class void <<module>> {}
+            class xml <<module>> {}
+            class xmlns <<module>> {}
+            class xsd <<module>> {}
+            class xsi <<module>> {}
+        }
+        v ..> name
+        v ..> namespace
+        v ..> nsmap
+    }
+}
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:v-module-overview
+#+CAPTION: The =rdf/core/v= modules
+#+RESULTS: src:v-module-overview
+[[file:./v-module-overview.svg]]
+
+
+#+NAME: src:v-rdf-module-overview
+#+BEGIN_SRC plantuml :file ./v-rdf-module-overview.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+class "rdf" as nsmodule <<static, module>> {
+    rdf-prefix-string : string?
+    rdf-namespace-string : string?
+    -- namespace --
+    rdf: namespace?
+    -- names --
+    rdf:lang-String : nsname?
+    rdf:HTML
+    rdf:XML-Literal
+    rdf:Property : nsname?
+    rdf:type : nsname?
+    rdf:Bag : nsname?
+    rdf:Seq : nsname?
+    rdf:Alt : nsname?
+    rdf:List : nsname?
+    rdf:first : nsname?
+    rdf:rest : nsname?
+    rdf:nil : nsname?
+    rdf:Statement : nsname?
+    rdf:subject : nsname?
+    rdf:predicate : nsname?
+    rdf:object : nsname?
+    rdf:value : nsname?
+    
+    nsmap-add-rdf(nsmap?)
+}
+
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:v-rdf-module-overview
+#+CAPTION: The =rdf/core/v/rdf= vocabulary module
+#+RESULTS: src:v-rdf-module-overview
+[[file:./v-rdf-module-overview.svg]]
+
+
+** Package =dc=
+
+#+NAME: src:dc-package-overview
+#+BEGIN_SRC plantuml :file ./dc-package-overview.svg :exports results
+@startuml
+
+hide empty members
+hide circles
+
+package rdf <<module>> {
+    class "core::name" as name <<module>> {}
+    class "core::namespace" as namespace <<module>> {}
+    class "core::nsmap" as nsmap <<module>> {}
+
+    package dc <<module>> {
+        class terms <<module>> {}
+        class elements <<module>> {}
+        class type <<module>> {}
+        class cam <<module>> {}
+    }
+    dc ..> name
+    dc ..> namespace
+    dc ..> nsmap
+}
+
+@enduml
+#+END_SRC
+
+#+NAME: fig:dc-package-overview
+#+CAPTION: 
+#+RESULTS: src:dc-package-overview
+[[file:./dc-package-overview.svg]]
